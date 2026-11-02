@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Times Tables"><title>Times Tables</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{margin:0;font-family:"Comic Sans MS",Arial,sans-serif;background:linear-gradient(135deg,#ffd36e,#ff7eb3,#7ec8ff);min-height:100vh;display:flex;align-items:center;justify-content:center;color:#333}
+.card{background:#fff;border-radius:30px;padding:30px 40px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.2);width:min(90vw,480px)}
+h1{color:#ff5e9c;margin:0 0 10px}
+#problem{font-size:72px;font-weight:bold;color:#4a6cf7;margin:20px 0;transition:transform .2s}
+#problem.ok{transform:scale(1.15);color:#2ecc71}
+#timer{font-size:28px;color:#ff8c00}#score{font-size:22px}
+#heard{min-height:28px;font-size:20px;color:#888}
+button{font-size:26px;padding:14px 34px;border:none;border-radius:50px;background:#2ecc71;color:#fff;cursor:pointer;margin:10px}
+button:hover{background:#27ae60}#cheer{font-size:40px;min-height:50px}
+input{font-size:24px;width:120px;text-align:center;border-radius:12px;border:2px solid #4a6cf7}
+</style></head><body><div id="installTip" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#4a6cf7;color:#fff;padding:14px;font-size:17px;text-align:center;z-index:9">📲 To install: tap <b>Share</b> <span style="font-size:20px">⎋↑</span> at the bottom of Safari, scroll down, tap <b>Add to Home Screen</b>, then <b>Add</b>. <span onclick="this.parentNode.remove()" style="margin-left:10px">✖</span></div><div class="card">
+<h1>🧮 Times Tables</h1>
+<div id="timer">⏱️ 120</div><div id="score">⭐ 0 / 0</div>
+<div id="records" style="font-size:16px;color:#8e44ad"></div><div id="problem">Ready?</div><div id="cheer"></div>
+<div id="heard">Press Start and type your answers!</div>
+<div id="typed" style="display:none"><input id="kb" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="Type answer" style="font-size:80px;font-weight:bold;font-family:monospace;width:280px;height:110px;text-align:right;padding:4px 16px;border-radius:16px;border:none;background:#1e2a3a;color:#7CFC9A;box-shadow:inset 0 3px 8px #000a"><div id="ans" style="display:none;font-size:40px;min-height:52px;font-weight:bold;letter-spacing:4px"></div><div id="pad" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:320px;margin:8px auto"><button class="k" data-d="1" style="font-size:34px;padding:16px 0;border-radius:14px;border:none;background:#fff;box-shadow:0 2px 6px #0003;touch-action:manipulation">1</button><button class="k" data-d="2" style="font-size:34px;padding:16px 0;border-radius:14px;border:none;background:#fff;box-shadow:0 2px 6px #0003;touch-action:manipulation">2</button><button class="k" data-d="3" style="font-size:34px;padding:16px 0;border-radius:14px;border:none;background:#fff;box-shadow:0 2px 6px #0003;touch-action:manipulation">3</button><button class="k" data-d="4" style="font-size:34px;padding:16px 0;border-radius:14px;border:none;background:#fff;box-shadow:0 2px 6px #0003;touch-action:manipulation">4</button><button class="k" data-d="5" style="font-size:34px;padding:16px 0;border-radius:14px;border:none;background:#fff;box-shadow:0 2px 6px #0003;touch-action:manipulation">5</button><button class="k" data-d="6" style="font-size:34px;padding:16px 0;border-radius:14px;border:none;background:#fff;box-shadow:0 2px 6px #0003;touch-action:manipulation">6</button><button class="k" data-d="7" style="font-size:34px;padding:16px 0;border-radius:14px;border:none;background:#fff;box-shadow:0 2px 6px #0003;touch-action:manipulation">7</button><button class="k" data-d="8" style="font-size:34px;padding:16px 0;border-radius:14px;border:none;background:#fff;box-shadow:0 2px 6px #0003;touch-action:manipulation">8</button><button class="k" data-d="9" style="font-size:34px;padding:16px 0;border-radius:14px;border:none;background:#fff;box-shadow:0 2px 6px #0003;touch-action:manipulation">9</button><button id="clr" style="font-size:26px;border-radius:14px;border:none;background:#ffd6d6;touch-action:manipulation">⌫</button><button class="k" data-d="0" style="font-size:34px;padding:16px 0;border-radius:14px;border:none;background:#fff;box-shadow:0 2px 6px #0003;touch-action:manipulation">0</button><span></span></div></div>
+<button id="start">▶️ Start</button>
+</div>
+<script>
+const words={zero:0,oh:0,one:1,won:1,two:2,to:2,too:2,three:3,four:4,for:4,five:5,six:6,seven:7,eight:8,ate:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90};
+function toNum(t){t=t.toLowerCase().replace(/-/g,' ');const d=t.match(/\d+/);if(d)return +d[0];let total=0,cur=0,found=false;
+for(const w of t.split(/\s+/)){if(w in words){cur+=words[w];found=true}else if(w==='hundred'&&found){cur*=100}}total+=cur;return found?total:null}
+const $=id=>document.getElementById(id);let a,b,correct,tries,left,tick,running=false,rec=null;
+const SR=null;
+let shown=0;const LS=k=>+localStorage.getItem('tt_'+k)||0;
+function showRec(){const f=LS('fast');$('records').textContent=`🏆 Best round: ${LS('best')} right · ⚡ Fastest answer: ${f?(f/1000).toFixed(1)+'s':'none yet'} · 🧮 All-time: ${LS('total')} right`}
+function next(){shown=Date.now();a=1+Math.floor(Math.random()*12);b=1+Math.floor(Math.random()*12);$('problem').textContent=`${a} × ${b}`;$('ans')&&($('ans').textContent='');$('kb')&&($('kb').value='');if(running&&window.restartMic)setTimeout(window.restartMic,60)}
+function check(n){if(!running||n===null)return;tries++;
+if(n===a*b){correct++;const ms=Date.now()-shown;if(!LS('fast')||ms<LS('fast'))localStorage.setItem('tt_fast',ms);localStorage.setItem('tt_total',LS('total')+1);showRec();$('cheer').textContent=['🎉','🌟','👏','🥳','💯'][Math.floor(Math.random()*5)];$('problem').classList.add('ok');
+setTimeout(()=>{$('problem').classList.remove('ok');$('cheer').textContent='';next();$('heard').textContent='';setTimeout(()=>{window.gate=false},250)},400)}
+else{$('cheer').textContent='🤔 Try again!'}$('score').textContent=`⭐ ${correct} / ${tries}`}
+function listen(){}
+async function start(){
+correct=0;tries=0;left=120;running=true;$('start').style.display='none';$('score').textContent='⭐ 0 / 0';$('timer').textContent='⏱️ 120';
+$('heard').textContent='Type your answer!';$('typed').style.display='block';setTimeout(()=>$('kb').focus(),50);
+next();listen();tick=setInterval(()=>{left--;$('timer').textContent='⏱️ '+left;if(left<=0)stop()},1000)}
+function stop(){running=false;let nb=correct>LS('best');if(nb)localStorage.setItem('tt_best',correct);showRec();clearInterval(tick);if(rec)rec.stop();$('problem').textContent='⏰ Time!';
+$('cheer').textContent=correct>=15?'🏆':correct>=8?'🌟':'👍';$('heard').textContent=`You got ${correct} right out of ${tries} tries!`+(nb?' 🎊 NEW RECORD!':'');
+$('start').textContent='🔁 Play Again';$('start').style.display='inline-block';$('typed').style.display='none'}
+$('start').onclick=start;showRec();document.querySelectorAll('.k').forEach(k=>k.onclick=()=>{const K=$('kb');K.value+=k.dataset.d;K.oninput()});$('kb').oninput=()=>{const K=$('kb');const v=K.value.replace(/\D/g,'');K.value=v;if(!running||!v)return;const w=String(a*b);if(v===w)check(+v);else if(!w.startsWith(v)||v.length>=w.length){check(+v);setTimeout(()=>K.value='',300)}};$('kb').onkeydown=e=>{if(e.key==='Enter'&&$('kb').value)check(+$('kb').value)};$('clr').onclick=()=>{const K=$('kb');K.value=K.value.slice(0,-1)};
+
+if(!(navigator.standalone||matchMedia('(display-mode: standalone)').matches))$('installTip').style.display='block';if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>r.update());navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!window._rl){window._rl=1;location.reload()}});</script></body></html>
